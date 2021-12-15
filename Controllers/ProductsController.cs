@@ -71,6 +71,11 @@ namespace OnlineMarketPlace.Controllers
         [HttpPut("product/{product_id}")]
         public async Task<IActionResult> UpdateProduct(int product_id, Product product)
         {
+            if (product_id != product.Id)
+            {
+                return BadRequest();
+            }
+
             _context.Entry(product).State = EntityState.Modified;
 
             try

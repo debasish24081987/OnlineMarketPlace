@@ -10,7 +10,7 @@ using OnlineMarketPlace.Models;
 
 namespace OnlineMarketPlace.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("v1")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
@@ -46,15 +46,15 @@ namespace OnlineMarketPlace.Controllers
             }
         }
 
-        // GET: api/Products
-        [HttpGet]
+        // GET: v1/products
+        [HttpGet("products")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
         {
             return await _context.Product.ToListAsync();
         }
 
-        // GET: api/Products/5
-        [HttpGet("{product_id}")]
+        // GET: v1/product/5
+        [HttpGet("product/{product_id}")]
         public async Task<ActionResult<Product>> GetProduct(int product_id)
         {
             var product = await _context.Product.FindAsync(product_id);
@@ -67,15 +67,10 @@ namespace OnlineMarketPlace.Controllers
             return product;
         }
 
-        // PUT: api/Products/5
-        [HttpPut("{product_id}")]
+        // PUT: v1/product/5
+        [HttpPut("product/{product_id}")]
         public async Task<IActionResult> UpdateProduct(int product_id, Product product)
         {
-            if (product_id != product.Id)
-            {
-                return BadRequest();
-            }
-
             _context.Entry(product).State = EntityState.Modified;
 
             try
@@ -94,21 +89,21 @@ namespace OnlineMarketPlace.Controllers
                 }
             }
 
-            return NoContent();
+            return new OkResult();
         }
 
-        // POST: api/Products
-        [HttpPost]
-        public async Task<ActionResult<Product>> AddProduct(Product product)
+        // POST: v1/product
+        [HttpPost("product")]
+        public async Task<IActionResult> AddProduct(Product product)
         {
             _context.Product.Add(product);
-            await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduct", new { product_id = product.Id }, product);
+            return Ok(result);
         }
 
-        // DELETE: api/Products/5
-        [HttpDelete("{product_id}")]
+        // DELETE: v1/product/5
+        [HttpDelete("product/{product_id}")]
         public async Task<IActionResult> DeleteProduct(int product_id)
         {
             var product = await _context.Product.FindAsync(product_id);
@@ -120,7 +115,7 @@ namespace OnlineMarketPlace.Controllers
             _context.Product.Remove(product);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool ProductExists(int product_id)
